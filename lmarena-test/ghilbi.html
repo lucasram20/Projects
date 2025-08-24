@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Enchanted Studio — Whimsical Landing</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="A whimsical, Studio Ghibli–inspired single-file landing page with gentle animations, parallax storytelling, sparkly CTAs, and scroll reveals." />
+  <style>
+    :root{
+      /* Palette */
+      --sky-1:#e9f8ff;
+      --sky-2:#bfe7ff;
+      --sky-3:#a7d9ff;
+      --forest-1:#9bd2a6;
+      --forest-2:#77c59b;
+      --forest-3:#5cab84;
+      --hill-1:#a3d6c1;
+      --hill-2:#7bbfb0;
+      --ink:#1f2a2e;
+      --ink-soft:#2e3a42;
+      --paper:#fbf9f2;
+      --glow:#ffdca8;
+      --accent:#a07df2;
+      --accent-2:#68c5ff;
+      --accent-3:#ffd08a;
+
+      /* Type & rhythm */
+      --round: 14px;
+      --space-1: 4px;
+      --space-2: 8px;
+      --space-3: 12px;
+      --space-4: 16px;
+      --space-5: 24px;
+      --space-6: 32px;
+      --space-7: 48px;
+      --space-8: 64px;
+
+      /* Motion */
+      --dur-1: 250ms;
+      --dur-2: 600ms;
+      --dur-3: 1200ms;
+      --ease: cubic-bezier(.22,.61,.36,1);
+      --ease-bounce: cubic-bezier(.34,1.56,.64,1);
+
+      /* Shadows */
+      --shadow-1: 0 3px 12px rgba(32,53,66,.12);
+      --shadow-2: 0 8px 28px rgba(32,53,66,.16);
+
+      /* Typewriter config for hero */
+      --typing-chars: 31; /* Adjust if you edit the hero text */
+    }
+
+    /* Global reset */
+    *,*::before,*::after { box-sizing: border-box; }
+    html,body { padding:0; margin:0; }
+    body{
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Noto Sans, Ubuntu, Cantarell, Helvetica Neue, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      color: var(--ink);
+      background: var(--paper);
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+    img,svg { max-width:100%; height:auto; display:block; }
+    a { color: inherit; text-decoration: none; }
+    .container { width: min(1080px, 92vw); margin: 0 auto; }
+
+    /* Accessible helpers */
+    .sr-only {
+      position:absolute !important;
+      width:1px;height:1px;
+      padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);
+      white-space:nowrap;border:0;
+    }
+    .skip-link {
+      position: absolute; left: 8px; top: 8px; z-index: 9999;
+      background: #111; color: #fff; padding: 8px 12px; border-radius: 8px;
+      transform: translateY(-120%); transition: transform var(--dur-1) var(--ease);
+    }
+    .skip-link:focus { transform: translateY(0); }
+
+    /* Navigation */
+    .site-header{
+      position: sticky; top: 0; z-index: 1000;
+      background: rgba(255,255,255,.55);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(0,0,0,.06);
+      transition: transform var(--dur-2) var(--ease), opacity var(--dur-2) var(--ease);
+    }
+    .site-header.hidden { transform: translateY(-100%); opacity: 0; }
+    .nav-inner{
+      display: flex; align-items: center; justify-content: space-between;
+      gap: var(--space-4);
+      padding: var(--space-3) var(--space-3);
+    }
+    .brand{
+      display: inline-flex; align-items:center; gap: 10px; font-weight: 800; letter-spacing:.4px;
+    }
+    .brand .seed {
+      width: 20px; height: 20px; border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #fff 0 30%, #f2f0e8 32% 50%, transparent 51%),
+                  radial-gradient(circle at 60% 70%, rgba(0,0,0,.06) 0 50%, transparent 51%);
+      border: 1px solid rgba(0,0,0,.08);
+      box-shadow: inset 0 2px 6px rgba(0,0,0,.08);
+    }
+    .nav-links {
+      display: flex; gap: var(--space-2); align-items: center; flex-wrap: wrap;
+    }
+    .nav-link{
+      position: relative; padding: 10px 12px; border-radius: 999px; font-weight: 600;
+      transition: color var(--dur-1) var(--ease);
+      /* Gradient border shimmer */
+      background:
+        linear-gradient(#fff,#fff) padding-box,
+        linear-gradient(120deg, transparent 0%, var(--accent) 30%, var(--accent-2) 60%, var(--accent-3) 100%) border-box;
+      border: 2px solid transparent;
+      background-size: 200% 200%;
+    }
+    .nav-link:hover, .nav-link:focus-visible {
+      color: #172027;
+      animation: shimmer 2.2s linear infinite;
+    }
+    @keyframes shimmer { to { background-position: 200% 0; } }
+
+    /* Hero */
+    #hero {
+      position: relative; min-height: 100svh; display: grid; place-items: center; overflow: hidden;
+      color: #17303a;
+      isolation: isolate;
+    }
+    /* Soft animated sky */
+    #hero::before{
+      content:""; position:absolute; inset:0; z-index:-2;
+      background:
+        radial-gradient(ellipse at 20% 15%, rgba(255,255,255,.9) 0%, rgba(255,255,255,0) 40%),
+        radial-gradient(ellipse at 80% 25%, rgba(255,255,255,.7) 0%, rgba(255,255,255,0) 40%),
+        linear-gradient(180deg, var(--sky-1), var(--sky-2) 55%, var(--sky-3) 100%);
+      background-size: 300% 300%, 300% 300%, 100% 100%;
+      animation: skyFloat 22s linear infinite;
+    }
+    @keyframes skyFloat {
+      0% { background-position: 0 0, 100% 0, 0 0; }
+      50% { background-position: 100% 0, 0 0, 0 0; }
+      100% { background-position: 0 0, 100% 0, 0 0; }
+    }
+    /* Gentle paper grain */
+    #hero::after{
+      content:""; position:absolute; inset:0; z-index:-1; pointer-events:none;
+      background-image:
+        radial-gradient(rgba(0,0,0,.03) 1px, transparent 1px);
+      background-size: 3px 3px;
+      opacity:.45;
+      mix-blend-mode: multiply;
+    }
+    .hero-inner {
+      text-align:center; padding: clamp(var(--space-7), 8vh, var(--space-8)) var(--space-4);
+    }
+    h1 {
+      font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+      font-size: clamp(28px, 5vw, 56px);
+      line-height: 1.1;
+      margin: 0 0 var(--space-3);
+      letter-spacing:.3px;
+    }
+    /* Typewriter for hero title */
+    .typewriter{
+      display:inline-block; overflow:hidden; white-space:nowrap; border-right: 2px solid rgba(23,48,58,.75);
+      /* width animates from 0 to N ch */
+      width: 0ch;
+      animation:
+        typing 3.2s steps(var(--typing-chars), end) .3s 1 both,
+        caret .9s steps(1, end) infinite;
+    }
+    @keyframes typing {
+      from { width: 0ch; }
+      to { width: var(--typing-chars); } /* unitless → ch via width: var(--typing-chars) in inline style; fallback below: */
+    }
+    /* Fallback width to ch if custom property is not supported */
+    .typewriter { width: 0ch; }
+    .typewriter.typed-end { border-right-color: transparent; }
+    @keyframes caret {
+      0%, 40% { border-color: rgba(23,48,58,.85); }
+      41%, 100% { border-color: transparent; }
+    }
+    .tagline{
+      font-size: clamp(16px, 2.4vw, 20px);
+      color: #2b4a54; opacity:.92; margin-bottom: var(--space-6);
+    }
+    .cta-group { display:flex; gap: var(--space-3); justify-content:center; flex-wrap: wrap; }
+
+    /* Sparkly CTA button */
+    .btn {
+      position: relative; display:inline-flex; align-items:center; justify-content:center; gap:8px;
+      padding: 14px 20px; border-radius: 999px; font-weight: 700;
+      background:
+        linear-gradient(#17303a,#17303a) padding-box,
+        linear-gradient(120deg, #ffd4a1, #a07df2, #68c5ff, #ffd08a) border-box;
+      border: 2px solid transparent; color: #fff;
+      box-shadow: var(--shadow-2);
+      transition: transform var(--dur-1) var(--ease), box-shadow var(--dur-1) var(--ease);
+      cursor: pointer;
+    }
+    .btn:active { transform: translateY(1px) scale(.99); }
+    .btn:hover, .btn:focus-visible { box-shadow: 0 10px 32px rgba(23,48,58,.25); }
+
+    .btn-sparkle { overflow: hidden; }
+    .btn-sparkle .sparkle {
+      position: absolute; width: 8px; height: 8px; border-radius: 50%;
+      background:
+        radial-gradient(circle at 35% 35%, #fff 0 35%, rgba(255,255,255,.3) 40%, transparent 60%);
+      filter: drop-shadow(0 0 6px rgba(255,255,255,.8));
+      opacity: .8;
+      animation: sparkle 2.2s ease-in-out infinite;
+    }
+    .btn-sparkle .s1 { top: 8px; left: 14px; animation-delay: .1s; }
+    .btn-sparkle .s2 { bottom: 10px; right: 18px; animation-delay: .5s; }
+    .btn-sparkle .s3 { top: 10px; right: 40px; animation-delay: .9s; }
+    .btn-sparkle .s4 { bottom: 14px; left: 40px; animation-delay: 1.3s; }
+    @keyframes sparkle {
+      0% { transform: scale(.5) translateY(0) rotate(0); opacity:.0; }
+      30% { opacity:.9; }
+      50% { transform: scale(1) translateY(-3px) rotate(15deg); }
+      100%{ transform: scale(.5) translateY(0) rotate(0); opacity:0; }
+    }
+
+    /* Floating clouds in hero */
+    .clouds {
+      position: absolute; inset: 0; pointer-events:none; z-index: -1;
+      opacity: .6;
+    }
+    .cloud { position: absolute; width: 200px; height: 90px; border-radius: 90px; background: rgba(255,255,255,.9); filter: blur(1px); }
+    .cloud::before, .cloud::after {
+      content:""; position: absolute; background: inherit; border-radius: inherit;
+    }
+    .cloud::before { width: 130px; height: 70px; left: -20px; top: 10px; }
+    .cloud::after { width: 140px; height: 70px; right: -20px; top: 18px; }
+    .c1 { top: 18%; left: -12%; animation: drift 60s linear infinite; }
+    .c2 { top: 28%; left: 10%; animation: drift 80s linear infinite reverse; transform: scale(1.1); }
+    .c3 { top: 12%; left: 55%; animation: drift 70s linear infinite; transform: scale(.85); }
+    .c4 { top: 38%; left: 70%; animation: drift 90s linear infinite reverse; transform: scale(1.2); }
+    @keyframes drift { to { transform: translateX(130vw); } }
+
+    /* Wave separator at hero bottom */
+    .wave {
+      position:absolute; left:0; right:0; bottom:-1px; height: 120px; z-index: 1; pointer-events:none;
+    }
+
+    /* Parallax Story */
+    #story {
+      position: relative; min-height: 130svh; background: linear-gradient(180deg, var(--sky-2) 0%, #d9f2ff 45%, #eaf9ff 60%);
+      overflow: hidden;
+    }
+    .scene { position: relative; height: 110svh; }
+    .layer {
+      position:absolute; left:50%; transform: translateX(-50%); width: 1600px; max-width: 1600px; will-change: transform;
+      pointer-events:none;
+    }
+    .layer svg { width: 1600px; height: auto; }
+    .layer--back { top: 10vh; opacity:.9; }
+    .layer--mid { top: 22vh; }
+    .layer--front { top: 38vh; }
+
+    .story-copy {
+      position: relative; z-index: 2; margin-top: 64svh; padding-bottom: var(--space-8);
+    }
+    .story-card{
+      background: rgba(255,255,255,.7); backdrop-filter: blur(6px);
+      border: 1px solid rgba(0,0,0,.06);
+      border-radius: 18px; padding: var(--space-6);
+      box-shadow: var(--shadow-1);
+      width: min(760px, 90%);
+    }
+    .story-card h2{
+      font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+      font-size: clamp(22px, 3.6vw, 34px); margin: 0 0 var(--space-3);
+    }
+    .story-card p { margin: 0; color: #2f494f; }
+
+    /* Features */
+    #features { padding: var(--space-8) 0; background: linear-gradient(180deg, #eefcf5, #f8fff9); }
+    #features .section-title{
+      text-align:center; font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+      font-size: clamp(22px, 4.2vw, 36px); margin-bottom: var(--space-6);
+    }
+    .cards{
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: var(--space-5); align-items: stretch;
+    }
+    .card{
+      position: relative; background: #fff; border-radius: 18px; padding: var(--space-6);
+      border: 1px solid rgba(0,0,0,.06);
+      box-shadow: var(--shadow-1);
+      transition: transform 500ms var(--ease), box-shadow var(--dur-1) var(--ease);
+    }
+    .card:hover, .card:focus-within { box-shadow: var(--shadow-2); }
+    .card:hover { animation: wobble 700ms var(--ease-bounce); }
+    @keyframes wobble {
+      0%   { transform: rotate(0) translateY(0); }
+      15%  { transform: rotate(-2deg) translateY(-3px); }
+      30%  { transform: rotate(2deg) translateY(-5px); }
+      45%  { transform: rotate(-1.5deg) translateY(-2px); }
+      60%  { transform: rotate(1deg) translateY(-3px); }
+      75%  { transform: rotate(-.5deg) translateY(-1px); }
+      100% { transform: rotate(0) translateY(0); }
+    }
+    .card h3 { margin: 0 0 var(--space-3); font-size: 18px; }
+    .card p { margin: 0; color: #40565b; }
+    .icon{
+      width: 42px; height: 42px; border-radius: 10px; display: inline-grid; place-items:center;
+      margin-bottom: var(--space-3);
+      background:
+        linear-gradient(#ffffff,#ffffff) padding-box,
+        linear-gradient(120deg, #ffd4a1, #a07df2, #68c5ff, #ffd08a) border-box;
+      border: 2px solid transparent;
+      box-shadow: 0 6px 16px rgba(0,0,0,.08);
+    }
+    .icon svg { width: 24px; height: 24px; }
+
+    /* Quotes reveal */
+    #quotes { padding: var(--space-8) 0; background: linear-gradient(180deg, #f8fff9, #fefcf6); }
+    .quotes-grid{
+      display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: var(--space-5);
+    }
+    blockquote{
+      margin:0; background: #fff; border-radius: 16px; padding: var(--space-5);
+      border: 1px solid rgba(0,0,0,.06); box-shadow: var(--shadow-1);
+      font-style: italic; color: #2e4850; position: relative;
+    }
+    blockquote::before{
+      content:"“"; position:absolute; left: 12px; top: -6px; font-size: 48px; color: rgba(0,0,0,.12);
+      font-family: Georgia, serif;
+    }
+    cite{ display:block; font-style: normal; margin-top: var(--space-3); color: #5b6c71; }
+
+    /* Reveal on scroll */
+    .reveal-on-scroll { opacity: 0; transform: translateY(18px) scale(.98); }
+    .reveal-on-scroll.revealed {
+      opacity: 1; transform: translateY(0) scale(1);
+      transition: transform var(--dur-2) var(--ease), opacity var(--dur-2) var(--ease);
+    }
+
+    /* Footer / Form */
+    footer { background: linear-gradient(180deg, #fefcf6, #fff); border-top: 1px solid rgba(0,0,0,.06); }
+    .footer-inner { padding: var(--space-8) 0 var(--space-8); }
+    .signup{
+      background: #ffffff; border-radius: 20px; padding: var(--space-6);
+      border: 1px solid rgba(0,0,0,.06); box-shadow: var(--shadow-1);
+    }
+    .signup h3{
+      margin:0 0 var(--space-3); font-size: clamp(18px, 3vw, 22px);
+      font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+    }
+    .form-row{
+      display:flex; gap: var(--space-3); flex-wrap: wrap; margin-top: var(--space-4);
+    }
+    .field{
+      position: relative; flex: 1 1 260px;
+    }
+    input[type="email"]{
+      width: 100%; padding: 14px 16px; border-radius: 14px; border: 2px solid #dfe8ec;
+      background: #fbfdff; color: var(--ink); font-size: 16px;
+      outline: none; transition: border-color var(--dur-1) var(--ease), box-shadow var(--dur-2) var(--ease);
+    }
+    input[type="email"]:focus {
+      border-color: #9fd2ff;
+      box-shadow: 0 0 0 6px rgba(159,210,255,.25), 0 6px 18px rgba(0,0,0,.08);
+    }
+    .btn-sub {
+      background:
+        linear-gradient(#1e2c33,#1e2c33) padding-box,
+        linear-gradient(120deg, #ffd4a1, #a07df2, #68c5ff, #ffd08a) border-box;
+      border:2px solid transparent; color:#fff; padding: 14px 18px; border-radius: 14px;
+      font-weight: 700; cursor: pointer; box-shadow: var(--shadow-1);
+      transition: transform var(--dur-1) var(--ease), box-shadow var(--dur-1) var(--ease);
+    }
+    .btn-sub:hover, .btn-sub:focus-visible { transform: translateY(-1px); box-shadow: var(--shadow-2); }
+
+    .tiny { font-size: 12px; color: #607279; margin-top: var(--space-3); }
+
+    /* Reduced motion preferences */
+    @media (prefers-reduced-motion: reduce) {
+      * { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+      .layer { transform: translateX(-50%) !important; }
+      .typewriter { width: auto !important; border-right: none !important; }
+      .btn-sparkle .sparkle { display: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to main content</a>
+
+  <header class="site-header" role="banner" aria-label="Top navigation">
+    <div class="nav-inner container">
+      <a href="#hero" class="brand">
+        <span class="seed" aria-hidden="true"></span>
+        Enchanted Studio
+      </a>
+      <nav class="nav-links" aria-label="Main">
+        <a class="nav-link" href="#story">Story</a>
+        <a class="nav-link" href="#features">Features</a>
+        <a class="nav-link" href="#quotes">Quotes</a>
+        <a class="nav-link" href="#join">Join</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" tabindex="-1">
+    <!-- HERO -->
+    <section id="hero" aria-labelledby="hero-title">
+      <div class="hero-inner container">
+        <h1 id="hero-title" aria-label="Welcome to the Enchanted Studio">
+          <span class="typewriter" aria-hidden="true" style="--typing-chars: 31">Welcome to the Enchanted Studio</span>
+        </h1>
+        <p class="tagline">A soft breeze. A curious path. Let the forest unveil its quiet magic.</p>
+        <div class="cta-group">
+          <a href="#story" class="btn btn-sparkle">
+            <span aria-hidden="true">🌿</span>
+            Enter the Forest
+            <span class="sparkle s1" aria-hidden="true"></span>
+            <span class="sparkle s2" aria-hidden="true"></span>
+            <span class="sparkle s3" aria-hidden="true"></span>
+            <span class="sparkle s4" aria-hidden="true"></span>
+          </a>
+          <a href="#features" class="btn" style="background:linear-gradient(#24414a,#24414a) padding-box, linear-gradient(120deg,#a7f0ba,#a07df2,#ffd08a) border-box; border:2px solid transparent;">Explore Features</a>
+        </div>
+      </div>
+
+      <!-- Floating clouds -->
+      <div class="clouds" aria-hidden="true">
+        <div class="cloud c1"></div>
+        <div class="cloud c2"></div>
+        <div class="cloud c3"></div>
+        <div class="cloud c4"></div>
+      </div>
+
+      <!-- Wave separator -->
+      <svg class="wave" viewBox="0 0 1440 120" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M0,64 C180,120 360,0 540,32 C720,64 900,128 1080,96 C1260,64 1440,32 1440,32 L1440,120 L0,120 Z" fill="#d9f2ff"></path>
+      </svg>
+    </section>
+
+    <!-- STORY (Parallax) -->
+    <section id="story" aria-labelledby="story-title">
+      <div class="scene">
+        <!-- Background mountains -->
+        <div class="layer layer--back" data-speed="0.20" aria-hidden="true">
+          <svg viewBox="0 0 1600 420" role="img" aria-label="Distant mountains">
+            <defs>
+              <linearGradient id="mtnGrad" x1="0" x2="0" y1="0" y2="1">
+                <stop offset="0%" stop-color="#bfe7ff"/>
+                <stop offset="100%" stop-color="#a8d6f6"/>
+              </linearGradient>
+            </defs>
+            <path d="M0,320 L140,240 L260,300 L380,210 L520,320 L640,190 L800,320 L980,220 L1140,320 L1320,220 L1460,300 L1600,260 L1600,420 L0,420 Z" fill="url(#mtnGrad)" stroke="rgba(0,0,0,.04)" stroke-width="2"/>
+          </svg>
+        </div>
+
+        <!-- Mid hills -->
+        <div class="layer layer--mid" data-speed="0.35" aria-hidden="true">
+          <svg viewBox="0 0 1600 420" role="img" aria-label="Rolling hills">
+            <defs>
+              <linearGradient id="hillGrad1" x1="0" x2="0" y1="0" y2="1">
+                <stop offset="0%" stop-color="#a3d6c1"/>
+                <stop offset="100%" stop-color="#7fbfb0"/>
+              </linearGradient>
+            </defs>
+            <path d="M0,340 C220,260 320,260 520,340 C720,420 920,240 1120,320 C1320,400 1460,300 1600,340 L1600,420 L0,420 Z" fill="url(#hillGrad1)" stroke="rgba(0,0,0,.05)" stroke-width="2"/>
+          </svg>
+        </div>
+
+        <!-- Foreground meadow -->
+        <div class="layer layer--front" data-speed="0.55" aria-hidden="true">
+          <svg viewBox="0 0 1600 420" role="img" aria-label="Meadow">
+            <defs>
+              <linearGradient id="meadowGrad" x1="0" x2="0" y1="0" y2="1">
+                <stop offset="0%" stop-color="#9bd2a6"/>
+                <stop offset="100%" stop-color="#5cab84"/>
+              </linearGradient>
+            </defs>
+            <path d="M0,360 C180,300 340,360 520,360 C700,360 860,300 1040,340 C1220,380 1400,320 1600,360 L1600,420 L0,420 Z" fill="url(#meadowGrad)"/>
+            <!-- Little trees -->
+            <g fill="#3f7c59" opacity=".85">
+              <path d="M140,330 l20,-36 l20,36 z" />
+              <rect x="158" y="330" width="4" height="14" fill="#3c6f54"/>
+              <path d="M420,320 l22,-42 l22,42 z" />
+              <rect x="439" y="320" width="4" height="14" fill="#3c6f54"/>
+              <path d="M760,330 l18,-34 l18,34 z" />
+              <rect x="776" y="330" width="4" height="14" fill="#3c6f54"/>
+              <path d="M1040,315 l20,-40 l20,40 z" />
+              <rect x="1058" y="315" width="4" height="14" fill="#3c6f54"/>
+              <path d="M1320,325 l18,-34 l18,34 z" />
+              <rect x="1336" y="325" width="4" height="14" fill="#3c6f54"/>
+            </g>
+          </svg>
+        </div>
+      </div>
+
+      <div class="story-copy container">
+        <div class="story-card reveal-on-scroll">
+          <h2 id="story-title">Follow the whispering path</h2>
+          <p>
+            Wander beneath drifting clouds and gentle hills. As you stroll, stories surface—rustling leaves, glints of light, and tiny sprites darting between the pines. Keep scrolling; the woods are alive with quiet surprises.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section id="features" aria-labelledby="features-title">
+      <div class="container">
+        <h2 id="features-title" class="section-title">Whimsical Features</h2>
+        <div class="cards">
+          <article class="card reveal-on-scroll" tabindex="0">
+            <div class="icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#6aa18c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2v6M12 16v6M2 12h6M16 12h6M5 5l4 4M15 15l4 4M5 19l4-4M15 9l4-4"/>
+              </svg>
+            </div>
+            <h3>Typewriter Welcome</h3>
+            <p>The hero title appears with a cozy typewriter effect, like a note slipped under your door.</p>
+          </article>
+
+          <article class="card reveal-on-scroll" tabindex="0">
+            <div class="icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#6aa18c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M2 12s4-8 10-8 10 8 10 8-4 8-10 8S2 12 2 12z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+            </div>
+            <h3>Parallax Story</h3>
+            <p>Layered hills and trees drift at different speeds, guiding your gaze through the forest.</p>
+          </article>
+
+          <article class="card reveal-on-scroll" tabindex="0">
+            <div class="icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#6aa18c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2l2.4 4.9L20 8l-4 3.9.9 5.6L12 15.9 7.1 17.5 8 11.9 4 8l5.6-.9L12 2z"/>
+              </svg>
+            </div>
+            <h3>Hover Wobble</h3>
+            <p>Cards shimmy with playful wobble when you say hello with your cursor.</p>
+          </article>
+
+          <article class="card reveal-on-scroll" tabindex="0">
+            <div class="icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#6aa18c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10a8 8 0 10-16 0c0 6 8 10 8 10z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+            </div>
+            <h3>Sparkly CTAs</h3>
+            <p>Buttons twinkle with gentle sparkles and a shimmering border, inviting a click.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- QUOTES -->
+    <section id="quotes" aria-labelledby="quotes-title">
+      <div class="container">
+        <h2 id="quotes-title" class="section-title">Forest Whispers</h2>
+        <div class="quotes-grid">
+          <blockquote class="reveal-on-scroll">
+            The quietest places tell the brightest stories.
+            <cite>— The Pines</cite>
+          </blockquote>
+          <blockquote class="reveal-on-scroll">
+            Follow the light, but listen to the wind.
+            <cite>— A Lantern</cite>
+          </blockquote>
+          <blockquote class="reveal-on-scroll">
+            Wonder grows where footsteps soften.
+            <cite>— Moss & Meadow</cite>
+          </blockquote>
+          <blockquote class="reveal-on-scroll">
+            Every leaf has a secret name.
+            <cite>— A Passing Breeze</cite>
+          </blockquote>
+        </div>
+      </div>
+    </section>
+
+    <!-- JOIN -->
+    <section id="join" aria-labelledby="join-title">
+      <footer>
+        <div class="footer-inner container">
+          <div class="signup reveal-on-scroll">
+            <h3 id="join-title">Join the woodland letter</h3>
+            <p class="tiny">Monthly notes with gentle UI ideas and tiny animations. No spam, just soft magic.</p>
+            <form class="form-row" action="#" method="post" aria-label="Join our newsletter" onsubmit="event.preventDefault(); alert('Thanks for joining!');">
+              <div class="field">
+                <label class="sr-only" for="email">Email address</label>
+                <input id="email" name="email" type="email" inputmode="email" autocomplete="email" placeholder="" required aria-describedby="email-help" />
+                <div id="email-help" class="sr-only">Enter a valid email to subscribe.</div>
+              </div>
+              <button type="submit" class="btn-sub btn-sparkle">
+                Subscribe
+                <span class="sparkle s1" aria-hidden="true"></span>
+                <span class="sparkle s2" aria-hidden="true"></span>
+                <span class="sparkle s3" aria-hidden="true"></span>
+                <span class="sparkle s4" aria-hidden="true"></span>
+              </button>
+            </form>
+          </div>
+          <p class="tiny" style="text-align:center; margin-top: var(--space-6);">© <span id="year"></span> Enchanted Studio • Built with love, gradients, and a little breeze</p>
+        </div>
+      </footer>
+    </section>
+  </main>
+
+  <script>
+    (function(){
+      const $ = (sel, root=document) => root.querySelector(sel);
+      const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
+
+      // Support: prefers-reduced-motion
+      const mediaReduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+      let prefersReduced = mediaReduce.matches;
+      mediaReduce.addEventListener?.('change', e => { prefersReduced = e.matches; });
+
+      // Sticky nav hide on scroll down, show on scroll up
+      (function navScroll(){
+        const header = $('.site-header');
+        if(!header) return;
+        let lastY = window.scrollY;
+        let ticking = false;
+        function onScroll(){
+          if (prefersReduced) { return; }
+          const y = window.scrollY;
+          const delta = y - lastY;
+          const threshold = 6;
+          if (Math.abs(delta) > threshold) {
+            if (delta > 0 && y > 60) header.classList.add('hidden');
+            else header.classList.remove('hidden');
+            lastY = y;
+          }
+          ticking = false;
+        }
+        window.addEventListener('scroll', () => {
+          if (!ticking) {
+            requestAnimationFrame(onScroll);
+            ticking = true;
+          }
+        }, { passive: true });
+      })();
+
+      // Intersection Observer for reveals
+      (function revealOnScroll(){
+        const items = $$('.reveal-on-scroll');
+        if(!('IntersectionObserver' in window) || items.length === 0){
+          items.forEach(el => el.classList.add('revealed'));
+          return;
+        }
+        const io = new IntersectionObserver((entries, obs) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('revealed');
+              obs.unobserve(entry.target);
+            }
+          });
+        }, { root: null, threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+        items.forEach(el => io.observe(el));
+      })();
+
+      // Parallax layers using rAF
+      (function parallax(){
+        const section = $('#story');
+        if (!section) return;
+        const layers = $$('.layer', section);
+        let ticking = false;
+
+        function update(){
+          if (prefersReduced) {
+            layers.forEach(l => l.style.transform = 'translateX(-50%) translateY(0)');
+            ticking = false;
+            return;
+          }
+          const top = section.offsetTop;
+          const h = section.offsetHeight;
+          const scrollY = window.scrollY;
+          const inView = (scrollY + window.innerHeight) > top && scrollY < (top + h);
+          if (!inView) { ticking = false; return; }
+
+          const relY = scrollY - top;
+          layers.forEach(layer => {
+            const speed = parseFloat(layer.dataset.speed) || 0;
+            const y = Math.round(relY * speed);
+            layer.style.transform = `translateX(-50%) translateY(${y}px)`;
+          });
+          ticking = false;
+        }
+        function schedule(){ if (!ticking) { ticking = true; requestAnimationFrame(update); } }
+
+        window.addEventListener('scroll', schedule, { passive: true });
+        window.addEventListener('resize', schedule);
+        update();
+      })();
+
+      // Animated placeholder for email
+      (function emailPlaceholder(){
+        const input = $('#email');
+        if (!input) return;
+        const text = 'Type your email...';
+        if (prefersReduced) { input.placeholder = text; return; }
+
+        let i = 0, timer = null, paused = false;
+        function type(){
+          if (document.activeElement === input || paused) { timer = setTimeout(type, 400); return; }
+          input.setAttribute('placeholder', text.slice(0, i));
+          i++;
+          if (i <= text.length) timer = setTimeout(type, 70);
+          else timer = setTimeout(() => { i = 0; type(); }, 1500);
+        }
+        type();
+
+        input.addEventListener('focus', () => {
+          input.setAttribute('placeholder', '');
+        });
+        input.addEventListener('blur', () => {
+          if (!input.value) { paused = false; if (!prefersReduced) { clearTimeout(timer); i = 0; type(); } }
+        });
+        // On input, pause the animation
+        input.addEventListener('input', () => { paused = !!input.value; });
+      })();
+
+      // Hero typewriter: ensure caret stops after animation completes (visual polish)
+      (function heroCaret(){
+        const tw = $('.typewriter');
+        if (!tw) return;
+        if (prefersReduced) {
+          tw.style.width = 'auto';
+          tw.classList.add('typed-end');
+          return;
+        }
+        const total = 3200 + 300; // duration + delay
+        setTimeout(() => tw.classList.add('typed-end'), total + 50);
+      })();
+
+      // Set year
+      (function year(){
+        const y = $('#year');
+        if (y) y.textContent = new Date().getFullYear();
+      })();
+    })();
+  </script>
+</body>
+</html>

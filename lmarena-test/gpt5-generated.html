@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#0b0f14" />
+  <title>ArcForge: Neon Skies — Game Landing</title>
+  <style>
+    :root{
+      --bg:#0b0f14;
+      --panel:rgba(255,255,255,0.04);
+      --panel-2:rgba(255,255,255,0.06);
+      --muted:#9aa4b2;
+      --text:#e7e9ee;
+      --primary:#8b5cf6; /* violet */
+      --primary-700:#7c3aed;
+      --primary-contrast:#ffffff;
+      --border:rgba(255,255,255,0.12);
+      --radius:14px;
+      --radius-sm:10px;
+      --shadow:0 10px 30px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.03);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      line-height:1.55;
+      color:var(--text);
+      background: radial-gradient(1200px 600px at 70% -10%, rgba(139,92,246,.2), transparent 60%) , var(--bg);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      scroll-behavior:smooth;
+    }
+    a{color:inherit;text-decoration:none}
+    img{max-width:100%;display:block}
+    .container{max-width:1200px;margin:0 auto;padding:0 24px}
+    .grid-overlay{
+      position:fixed; inset:0; pointer-events:none; opacity:.12; z-index:0;
+      background:
+        linear-gradient(to right, rgba(255,255,255,.08) 1px, transparent 1px) 0 0/40px 40px,
+        linear-gradient(to bottom, rgba(255,255,255,.08) 1px, transparent 1px) 0 0/40px 40px;
+      mask-image: radial-gradient(circle at 50% 20%, black, transparent 70%);
+    }
+
+    /* Glassy nav */
+    .site-nav{
+      position:sticky; top:20px; z-index:50;
+    }
+    .nav-inner{
+      display:flex; align-items:center; justify-content:space-between;
+      border:1px solid var(--border);
+      background: color-mix(in oklab, var(--bg) 85%, white 0%);
+      backdrop-filter: blur(10px);
+      padding:10px 14px; border-radius:16px;
+      box-shadow:var(--shadow);
+    }
+    .brand{display:flex; align-items:center; gap:10px; font-weight:700}
+    .logo{
+      width:32px; height:32px; display:grid; place-items:center;
+      border-radius:8px; background:rgba(139,92,246,.16); color:var(--primary);
+      border:1px solid rgba(139,92,246,.3)
+    }
+    nav.menu{display:none; gap:22px}
+    nav.menu a{font-size:.95rem; color:var(--muted)}
+    nav.menu a:hover{color:var(--text)}
+    @media (min-width:780px){ nav.menu{display:flex} }
+
+    /* Buttons (shadcn-like) */
+    .btn{
+      --btn-bg: var(--primary);
+      --btn-fg: var(--primary-contrast);
+      --btn-bd: transparent;
+      display:inline-flex; align-items:center; justify-content:center; gap:10px;
+      border:1px solid var(--btn-bd); color:var(--btn-fg); background:var(--btn-bg);
+      padding:10px 14px; border-radius:10px; font-weight:600; cursor:pointer;
+      transition:transform .2s ease, background .2s ease, border-color .2s ease, color .2s ease, box-shadow .2s ease;
+      box-shadow: 0 6px 18px rgba(139,92,246,.25);
+    }
+    .btn:hover{transform:translateY(-2px) scale(1.02); background:var(--primary-700)}
+    .btn:active{transform:translateY(0) scale(.98)}
+    .btn-outline{ --btn-bg: transparent; --btn-fg: var(--text); --btn-bd: var(--border); box-shadow:none; }
+    .btn-outline:hover{ border-color: rgba(139,92,246,.5); background: rgba(139,92,246,.1) }
+    .btn-ghost{ --btn-bg: transparent; --btn-fg: var(--text); --btn-bd: transparent; box-shadow:none; opacity:.9 }
+    .btn-sm{ padding:8px 12px; font-size:.9rem }
+    .btn-lg{ padding:12px 16px; font-size:1rem }
+
+    /* Badge */
+    .badge{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:6px 10px; font-size:.9rem; border-radius:999px;
+      border:1px solid var(--border); background: rgba(255,255,255,.04); color:var(--text);
+    }
+    .badge-secondary{ background: rgba(139,92,246,.14); border-color: rgba(139,92,246,.35); color:#cfc5ff }
+
+    /* Card */
+    .card{
+      border:1px solid var(--border); background:var(--panel); border-radius:var(--radius);
+      overflow:hidden; box-shadow:var(--shadow)
+    }
+    .card-header{ display:flex; gap:12px; align-items:center; padding:14px 16px; border-bottom:1px solid rgba(255,255,255,.06) }
+    .card-title{ font-weight:700; font-size:1rem }
+    .card-description{ font-size:.9rem; color:var(--muted) }
+    .card-content{ padding:16px }
+    .card-footer{ padding:12px 16px; border-top:1px solid rgba(255,255,255,.06); display:flex; align-items:center; gap:10px; flex-wrap:wrap }
+
+    /* Avatars */
+    .avatar{ width:28px; height:28px; border-radius:50%; overflow:hidden; border:1px solid var(--border) }
+    .avatar + .avatar{ margin-left:-10px; box-shadow:0 0 0 2px var(--bg) }
+
+    /* Separator */
+    .sep{ width:1px; height:18px; background:var(--border) }
+
+    /* Sections */
+    section{ position:relative; z-index:1 }
+    .hero{ padding: 30px 0 0 }
+    .hero-inner{ display:grid; gap:28px; align-items:center }
+    @media (min-width:900px){
+      .hero-inner{ grid-template-columns: 1.1fr 1fr; gap:40px }
+    }
+    .headline{ font-size: clamp(32px, 5vw, 64px); line-height:1.05; font-weight:800; letter-spacing:-.02em }
+    .lede{ color:var(--muted); font-size: clamp(16px, 2.4vw, 18px); max-width:58ch }
+    .hero-card-float{ animation: float 7s ease-in-out infinite }
+    @keyframes float{ 0%,100%{ transform: translateY(0) } 50%{ transform: translateY(-10px) } }
+
+    /* Feature grid */
+    .features{ padding: 80px 0 }
+    .features-grid{ display:grid; gap:16px }
+    @media (min-width:720px){ .features-grid{ grid-template-columns: repeat(2,1fr) } }
+    @media (min-width:1024px){ .features-grid{ grid-template-columns: repeat(3,1fr) } }
+
+    /* Trailer */
+    .trailer{ padding: 60px 0 }
+    .video-frame{ position:relative; aspect-ratio: 16/9; border-radius:12px; overflow:hidden; border:1px solid var(--border) }
+    .video-frame .overlay{
+      position:absolute; inset:0; display:grid; place-items:center;
+      background:linear-gradient(to bottom, rgba(0,0,0,.2), rgba(0,0,0,.35))
+    }
+
+    /* Screenshots */
+    .screens{ padding: 70px 0 }
+    .scroller{ overflow:auto hidden }
+    .shots{ display:flex; gap:12px; padding:12px }
+    .shot{ position:relative; width:360px; height:210px; flex: 0 0 auto; border-radius:12px; overflow:hidden; border:1px solid var(--border) }
+    .shot .caption{
+      position:absolute; left:0; right:0; bottom:0; padding:8px 10px; font-size:.9rem;
+      background:linear-gradient(to top, rgba(0,0,0,.45), transparent); color:#fff
+    }
+
+    /* Community */
+    .community{ padding:60px 0 }
+    .testimonials{ display:grid; gap:16px }
+    @media (min-width:860px){ .testimonials{ grid-template-columns: repeat(3,1fr) } }
+
+    /* CTA */
+    .cta{ padding:10px 0 70px }
+    .cta-inner{
+      display:grid; gap:16px; border:1px solid var(--border); border-radius:18px;
+      background: linear-gradient(160deg, rgba(139,92,246,.15), transparent 45%), var(--panel);
+      padding:22px; box-shadow:var(--shadow)
+    }
+    @media (min-width:860px){ .cta-inner{ grid-template-columns: 1.1fr .9fr; padding:28px } }
+    .input{
+      background:rgba(255,255,255,.04); color:var(--text); border:1px solid var(--border);
+      border-radius:10px; padding:12px 14px; font-size:1rem; outline:none; width:100%;
+      transition:border-color .2s ease, background .2s ease, box-shadow .2s ease;
+    }
+    .input:focus{ border-color: rgba(139,92,246,.5); box-shadow:0 0 0 4px rgba(139,92,246,.18) }
+
+    /* Footer */
+    footer{ border-top:1px solid var(--border) }
+    .footer-inner{ display:flex; flex-direction:column; gap:18px; align-items:center; justify-content:space-between; padding:22px 0 }
+    @media (min-width:800px){ .footer-inner{ flex-direction:row } }
+    .muted{ color:var(--muted) }
+
+    /* Icons (inline) */
+    .icon{ width:18px; height:18px; opacity:.9 }
+
+    /* Motion-like reveals */
+    .reveal{ opacity:0; transform: translateY(16px); transition: opacity .6s ease, transform .6s ease }
+    .reveal.in{ opacity:1; transform: translateY(0) }
+    .hover-lift{ transition: transform .25s ease }
+    .hover-lift:hover{ transform: translateY(-4px) }
+  </style>
+</head>
+<body>
+  <div class="grid-overlay"></div>
+
+  <header class="site-nav container">
+    <div class="nav-inner">
+      <a href="#" class="brand">
+        <div class="logo" aria-hidden="true">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M7 8h10l3 4-3 4H7l-3-4 3-4Z" />
+            <circle cx="9" cy="12" r="1.5" />
+            <circle cx="15" cy="12" r="1.5" />
+          </svg>
+        </div>
+        ArcForge
+      </a>
+
+      <nav class="menu">
+        <a href="#features">Features</a>
+        <a href="#trailer">Trailer</a>
+        <a href="#screens">Screenshots</a>
+        <a href="#community">Community</a>
+      </nav>
+
+      <div style="display:flex; gap:10px; align-items:center">
+        <button class="btn btn-ghost btn-sm" title="Wishlist on Steam">Wishlist</button>
+        <button class="btn btn-sm" onclick="document.querySelector('#download-anchor').scrollIntoView({behavior:'smooth'})">Download</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero -->
+    <section class="hero">
+      <div class="container hero-inner">
+        <div>
+          <div class="reveal" style="transition-delay:.02s">
+            <span class="badge badge-secondary">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v3M5.2 5.2l2.1 2.1M3 12h3M5.2 18.8l2.1-2.1M12 21v-3M18.8 18.8l-2.1-2.1M21 12h-3M18.8 5.2l-2.1 2.1"/></svg>
+              v1.0 Launch
+            </span>
+            <span class="muted" style="margin-left:10px; font-size:.95rem">Now live on PC & Console</span>
+          </div>
+
+          <h1 class="headline reveal" style="margin:14px 0 10px; transition-delay:.08s">ArcForge: Neon Skies</h1>
+          <p class="lede reveal" style="transition-delay:.14s">
+            A fast‑paced sci‑fi action RPG. Master aerial combat, forge legendary gear, and rise through the neon clouds of the last sky‑cities.
+          </p>
+
+          <div class="reveal" style="transition-delay:.2s; margin-top:16px; display:flex; flex-wrap:wrap; gap:12px; align-items:center">
+            <button class="btn btn-lg" onclick="alert('Launching the installer...')">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <path d="M12 3v12m0 0-4-4m4 4 4-4M5 21h14" /></svg>
+              Play Free
+            </button>
+            <button class="btn btn-outline btn-lg" id="open-trailer">
+              <svg class="icon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7-11-7z"/></svg>
+              Watch trailer
+            </button>
+
+            <div style="display:flex; align-items:center; gap:8px; margin-left:4px">
+              <img class="avatar" alt="" src="https://i.pravatar.cc/64?img=11" />
+              <img class="avatar" alt="" src="https://i.pravatar.cc/64?img=32" />
+              <img class="avatar" alt="" src="https://i.pravatar.cc/64?img=22" />
+              <span class="muted" style="font-size:.95rem">200k+ players joined</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hero visual -->
+        <div class="hero-card-float reveal" style="transition-delay:.1s">
+          <div class="card hover-lift">
+            <div style="position:relative; aspect-ratio: 4/3; overflow:hidden">
+              <img alt="Gameplay screenshot"
+                   src="https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=1200&auto=format&fit=crop"
+                   style="width:100%; height:100%; object-fit:cover">
+              <div style="position:absolute; inset:0; background:linear-gradient(to top, rgba(11,15,20,.75), transparent 50%)"></div>
+            </div>
+            <div class="card-footer">
+              <span class="badge" style="display:inline-flex; align-items:center; gap:6px">
+                <svg class="icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                Editor’s Choice
+              </span>
+              <span class="sep"></span>
+              <span class="muted" style="display:inline-flex; align-items:center; gap:6px">
+                <svg class="icon" viewBox="0 0 24 24" fill="#facc15" stroke="#facc15"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                4.8/5
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features -->
+    <section id="features" class="features">
+      <div class="container">
+        <h2 class="reveal" style="transition-delay:.02s; font-size: clamp(26px, 3.2vw, 36px); margin:0 0 6px">Forge your legend in the skies</h2>
+        <p class="reveal muted" style="transition-delay:.08s; margin:0 0 18px">Deep systems, tight controls, and a world that rewards skillful flight.</p>
+
+        <div class="features-grid" data-stagger=".15">
+          <!-- Feature cards -->
+          <div class="card reveal hover-lift">
+            <div class="card-header">
+              <div class="logo" style="width:36px;height:36px"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12h18M12 3v18M5 7l2 2m10-2-2 2"/></svg></div>
+              <div><div class="card-title">Aerial Combat</div><div class="card-description">Boost, drift, and dive through vast sky‑cities.</div></div>
+            </div>
+            <div class="card-content"><div style="height:110px; border-radius:10px; background:var(--panel-2)"></div></div>
+            <div class="card-footer"><button class="btn btn-ghost btn-sm">Learn more →</button></div>
+          </div>
+
+          <div class="card reveal hover-lift">
+            <div class="card-header">
+              <div class="logo" style="width:36px;height:36px"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l7 4v8l-7 4-7-4V6z"/><path d="M12 22V12"/></svg></div>
+              <div><div class="card-title">Build & Defend</div><div class="card-description">Forge modular gear and adaptive shields.</div></div>
+            </div>
+            <div class="card-content"><div style="height:110px; border-radius:10px; background:var(--panel-2)"></div></div>
+            <div class="card-footer"><button class="btn btn-ghost btn-sm">Learn more →</button></div>
+          </div>
+
+          <div class="card reveal hover-lift">
+            <div class="card-header">
+              <div class="logo" style="width:36px;height:36px"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 9l6 6M20 9l-6 6M4 7h7l-1 10H5z"/></svg></div>
+              <div><div class="card-title">Co‑op Raids</div><div class="card-description">Team up for high‑stakes boss runs.</div></div>
+            </div>
+            <div class="card-content"><div style="height:110px; border-radius:10px; background:var(--panel-2)"></div></div>
+            <div class="card-footer"><button class="btn btn-ghost btn-sm">Learn more →</button></div>
+          </div>
+
+          <div class="card reveal hover-lift">
+            <div class="card-header">
+              <div class="logo" style="width:36px;height:36px"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 15c3-6 15-6 18 0"/></svg></div>
+              <div><div class="card-title">Dynamic Weather</div><div class="card-description">Storms & solar flares reshape battlefields.</div></div>
+            </div>
+            <div class="card-content"><div style="height:110px; border-radius:10px; background:var(--panel-2)"></div></div>
+            <div class="card-footer"><button class="btn btn-ghost btn-sm">Learn more →</button></div>
+          </div>
+
+          <div class="card reveal hover-lift">
+            <div class="card-header">
+              <div class="logo" style="width:36px;height:36px"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7 21v-4M17 21v-8M12 21v-6"/></svg></div>
+              <div><div class="card-title">Player Hubs</div><div class="card-description">Meet, trade, and duel in neon districts.</div></div>
+            </div>
+            <div class="card-content"><div style="height:110px; border-radius:10px; background:var(--panel-2)"></div></div>
+            <div class="card-footer"><button class="btn btn-ghost btn-sm">Learn more →</button></div>
+          </div>
+
+          <div class="card reveal hover-lift">
+            <div class="card-header">
+              <div class="logo" style="width:36px;height:36px"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 17l3-3 3 3M12 4v10"/></svg></div>
+              <div><div class="card-title">Endgame Mastery</div><div class="card-description">Climb leaderboards with endless tiers.</div></div>
+            </div>
+            <div class="card-content"><div style="height:110px; border-radius:10px; background:var(--panel-2)"></div></div>
+            <div class="card-footer"><button class="btn btn-ghost btn-sm">Learn more →</button></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Trailer -->
+    <section id="trailer" class="trailer">
+      <div class="container" style="display:grid; gap:22px; align-items:center">
+        <div class="reveal" style="transition-delay:.06s">
+          <h3 style="font-size: clamp(22px, 3vw, 30px); margin:0 0 6px">The skies await</h3>
+          <p class="muted" style="margin:0 0 10px">Discover a living world above the clouds. Uncover secrets, craft new gear, and take down towering skyborn colossi.</p>
+          <div style="display:flex; gap:8px; flex-wrap:wrap">
+            <span class="badge">PC</span>
+            <span class="badge">Xbox</span>
+            <span class="badge">PlayStation</span>
+          </div>
+        </div>
+
+        <div class="video-frame reveal hover-lift" style="transition-delay:.12s">
+          <img alt="Trailer still" src="https://images.unsplash.com/photo-1538481199705-c710c4e965fc?q=80&w=1200&auto=format&fit=crop" style="width:100%; height:100%; object-fit:cover">
+          <div class="overlay">
+            <button class="btn btn-lg" id="open-trailer-2">
+              <svg class="icon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7-11-7z"/></svg>
+              Play trailer
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Screenshots -->
+    <section id="screens" class="screens">
+      <div class="container">
+        <h3 class="reveal" style="transition-delay:.04s; font-size: clamp(22px, 3vw, 30px); margin:0 0 12px">In‑game screenshots</h3>
+        <div class="card">
+          <div class="card-content" style="padding:0">
+            <div class="scroller">
+              <div class="shots">
+                <div class="shot reveal" style="transition-delay:.02s">
+                  <img alt="City docks at dusk" src="https://images.unsplash.com/photo-1508057198894-247b23fe5ade?q=80&w=1200&auto=format&fit=crop">
+                  <div class="caption">City docks at dusk</div>
+                </div>
+                <div class="shot reveal" style="transition-delay:.08s">
+                  <img alt="Stormfront battle" src="https://images.unsplash.com/photo-1482192596544-9eb780fc7f66?q=80&w=1200&auto=format&fit=crop">
+                  <div class="caption">Stormfront battle</div>
+                </div>
+                <div class="shot reveal" style="transition-delay:.14s">
+                  <img alt="Neon market hub" src="https://images.unsplash.com/photo-1491884662610-dfcd28f30cf5?q=80&w=1200&auto=format&fit=crop">
+                  <div class="caption">Neon market hub</div>
+                </div>
+                <div class="shot reveal" style="transition-delay:.2s">
+                  <img alt="Boss: Sky Leviathan" src="https://images.unsplash.com/photo-1472214103451-9374bd1c798e?q=80&w=1200&auto=format&fit=crop">
+                  <div class="caption">Boss: Sky Leviathan</div>
+                </div>
+                <div class="shot reveal" style="transition-delay:.26s">
+                  <img alt="Loadout forge" src="https://images.unsplash.com/photo-1485827404703-89b55fcc595e?q=80&w=1200&auto=format&fit=crop">
+                  <div class="caption">Loadout forge</div>
+                </div>
+                <div class="shot reveal" style="transition-delay:.32s">
+                  <img alt="Co‑op raid in progress" src="https://images.unsplash.com/photo-1520975922203-b124fabc1158?q=80&w=1200&auto=format&fit=crop">
+                  <div class="caption">Co‑op raid in progress</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Community -->
+    <section id="community" class="community">
+      <div class="container">
+        <div class="reveal" style="transition-delay:.04s; margin-bottom:14px">
+          <h3 style="font-size: clamp(22px, 3vw, 30px); margin:0 0 4px">What pilots are saying</h3>
+          <p class="muted" style="margin:0">Join a growing community soaring above the clouds.</p>
+        </div>
+
+        <div class="testimonials">
+          <div class="card reveal">
+            <div class="card-header">
+              <img class="avatar" src="https://i.pravatar.cc/64?img=64" alt="Rin Archer">
+              <div>
+                <div class="card-title">Rin Archer</div>
+                <div class="card-description">@skyweaver</div>
+              </div>
+            </div>
+            <div class="card-content muted">Movement is buttery smooth. Dodging through a storm mid‑fight is unreal.</div>
+          </div>
+
+          <div class="card reveal">
+            <div class="card-header">
+              <img class="avatar" src="https://i.pravatar.cc/64?img=5" alt="Jae Sol">
+              <div>
+                <div class="card-title">Jae Sol</div>
+                <div class="card-description">@forge_main</div>
+              </div>
+            </div>
+            <div class="card-content muted">Buildcraft is deep without being confusing. Perfect balance.</div>
+          </div>
+
+          <div class="card reveal">
+            <div class="card-header">
+              <img class="avatar" src="https://i.pravatar.cc/64?img=15" alt="T.K.">
+              <div>
+                <div class="card-title">T.K.</div>
+                <div class="card-description">@pilotTK</div>
+              </div>
+            </div>
+            <div class="card-content muted">Co‑op raids hit that sweet spot of chaos and coordination. 10/10.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta" id="download-anchor">
+      <div class="container">
+        <div class="cta-inner reveal" style="transition-delay:.06s">
+          <div>
+            <h4 style="font-size: clamp(18px, 2.6vw, 22px); margin:0 0 6px">Join the Closed Beta</h4>
+            <p class="muted" style="margin:0">Get early access, exclusive cosmetics, and help shape the game.</p>
+          </div>
+          <form onsubmit="event.preventDefault(); requestInvite(this)" style="display:flex; gap:10px; flex-wrap:wrap; align-items:center">
+            <input class="input" type="email" name="email" placeholder="you@example.com" required />
+            <button class="btn" type="submit">Request invite</button>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container footer-inner">
+      <div class="muted" style="display:flex; align-items:center; gap:8px">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7 8h10l3 4-3 4H7l-3-4 3-4Z"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/></svg>
+        © <span id="year"></span> ArcForge Studios
+      </div>
+      <div class="muted" style="display:flex; gap:18px">
+        <a href="#">Terms</a>
+        <a href="#">Privacy</a>
+        <a href="#">Support</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Trailer Dialog -->
+  <dialog id="trailerDialog" style="border:none; border-radius:16px; padding:0; width:min(90vw, 960px); background:var(--bg); color:var(--text);">
+    <div style="display:flex; justify-content:space-between; align-items:center; padding:12px 14px; border-bottom:1px solid var(--border)">
+      <strong>ArcForge: Neon Skies — Official Trailer</strong>
+      <button class="btn btn-ghost btn-sm" id="close-trailer" aria-label="Close">Close</button>
+    </div>
+    <div style="padding:12px">
+      <div style="aspect-ratio:16/9; border-radius:12px; overflow:hidden; border:1px solid var(--border)">
+        <iframe id="ytframe" width="100%" height="100%" src="" title="Trailer" frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+      </div>
+    </div>
+    <form method="dialog"><button style="position:absolute; inset:0; opacity:0">close</button></form>
+  </dialog>
+
+  <script>
+    // Year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Framer-motion-like reveals using IntersectionObserver
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('in');
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.15 });
+    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+    // Stagger helper: set transition delays for children inside containers with [data-stagger]
+    document.querySelectorAll('[data-stagger]').forEach(parent => {
+      const step = parseFloat(parent.getAttribute('data-stagger')) || 0.06;
+      const children = Array.from(parent.children);
+      children.forEach((el, i) => {
+        if (el.classList.contains('reveal')) {
+          el.style.transitionDelay = (i * step).toFixed(2) + 's';
+        }
+      });
+    });
+
+    // Trailer dialog control
+    const dialog = document.getElementById('trailerDialog');
+    const yt = document.getElementById('ytframe');
+    const openBtns = [document.getElementById('open-trailer'), document.getElementById('open-trailer-2')].filter(Boolean);
+    const closeBtn = document.getElementById('close-trailer');
+
+    function openTrailer() {
+      try { dialog.showModal(); } catch { dialog.setAttribute('open', ''); }
+      yt.src = "https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0&autoplay=1";
+    }
+    function closeTrailer() {
+      yt.src = ""; // stop playback
+      if (dialog.open) dialog.close(); else dialog.removeAttribute('open');
+    }
+    openBtns.forEach(btn => btn && btn.addEventListener('click', openTrailer));
+    closeBtn.addEventListener('click', closeTrailer);
+    dialog.addEventListener('click', (e) => { // click outside to close
+      const rect = dialog.getBoundingClientRect();
+      const inDialog = e.clientX >= rect.left && e.clientX <= rect.right && e.clientY >= rect.top && e.clientY <= rect.bottom;
+      if (!inDialog) closeTrailer();
+    });
+
+    // Simple invite handler
+    function requestInvite(form){
+      const email = new FormData(form).get('email');
+      alert(`Thanks! We'll send a beta invite to ${email} soon.`);
+      form.reset();
+    }
+    window.requestInvite = requestInvite;
+  </script>
+  <style>
+    /* Dialog backdrop (placed after to ensure specificity) */
+    #trailerDialog::backdrop{ background: rgba(0,0,0,.6) }
+  </style>
+</body>
+</html>
